@@ -2,7 +2,7 @@ class Platformer extends Phaser.Scene {
     constructor() {
         super("platformerScene");
     }
-
+    
     init() {
         // variables and settings
         this.ACCELERATION = 900;
@@ -14,7 +14,7 @@ class Platformer extends Phaser.Scene {
         this.ballx = 200;
         this.bally = 600;
         this.direction = 1;
-        this.score = 0;
+        
         this.stroke = 0;
         this.gameover = false;
         this.slow = 0.5;
@@ -134,7 +134,7 @@ class Platformer extends Phaser.Scene {
         }, this);
         
         this.ball = this.physics.add.sprite(200, 700 , "balls", "ball_blue_small.png").setScale(0.8);
-       
+        this.ball.score = 0;
         this.physics.add.collider(this.ball, this.groundLayer);
         this.physics.add.collider(my.sprite.player, this.groundLayer);
         this.physics.add.overlap(this.ball, this.coins, this.collectCoin);
@@ -160,7 +160,7 @@ class Platformer extends Phaser.Scene {
             this.gameover = true;
         }
         if(this.gameover){
-            let finalscore = 15 - this.stroke + this.score
+            let finalscore = 15 - this.stroke + this.ball.score;
             console.log(finalscore);
             this.gameovertext.setText("You Win, Score: " + finalscore);
             this.gameovertext.visible = true;
@@ -173,10 +173,10 @@ class Platformer extends Phaser.Scene {
             
         }
         
-        /*if(cursors.down.isDown){
+        if(cursors.down.isDown){
             this.ball.body.x = my.sprite.player.x;
             this.ball.body.y = my.sprite.player.y;
-        }*/
+        }
         //console.log(this.ball.body.velocity.x);
         //console.log(this.ball.body.velocity.y);
         this.ball.body.bounce.set(0.5);
@@ -256,10 +256,10 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.body.setDragX(this.DRAG);
             my.sprite.player.anims.play('idle');
         }
-    console.log(this.ball.body.x);
-    console.log(this.ball.body.y);
+    //console.log(this.ball.body.x);
+    //console.log(this.ball.body.y);
         //console.log(this.direction);
-
+console.log(this.ball.score);
         // player jump
         // note that we need body.blocked rather than body.touching b/c the former applies to tilemap tiles and the latter to the "ground"
         if(!my.sprite.player.body.blocked.down ) {
@@ -273,8 +273,9 @@ class Platformer extends Phaser.Scene {
         
     }
     collectCoin(ball, coin) {
+        ball.score+=2;
+        
         coin.destroy(coin.x, coin.y); // remove the tile/coin
-        this.score+= 2;
         return;
     }
     wingame(ball, hole){
