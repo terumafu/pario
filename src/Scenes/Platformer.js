@@ -146,6 +146,7 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
+        console.log(this.ball)
         if(my.sprite.player.body.y >= 750){
             this.slow = 0.5;
             my.sprite.player.body.setMaxVelocityX(this.MAXVELX * this.slow);
@@ -172,11 +173,15 @@ class Platformer extends Phaser.Scene {
             this.bally = this.ball.body.y -20;
             
         }
-        
+        /*
         if(cursors.down.isDown){
             this.ball.body.x = my.sprite.player.x;
             this.ball.body.y = my.sprite.player.y;
-        }
+        }*/
+
+        //current version has cheats active but it doesnt apply for some reason
+
+
         //console.log(this.ball.body.velocity.x);
         //console.log(this.ball.body.velocity.y);
         this.ball.body.bounce.set(0.5);
