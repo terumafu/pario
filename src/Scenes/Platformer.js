@@ -1,6 +1,14 @@
 class Platformer extends Phaser.Scene {
     constructor() {
         super("platformerScene");
+        this.toggle = false;
+        this.ballx = 200;
+        this.bally = 600;
+        this.direction = 1;
+        
+        this.stroke = 0;
+        this.gameover = false;
+        this.slow = 0.5;
     }
     
     init() {
@@ -10,14 +18,7 @@ class Platformer extends Phaser.Scene {
         this.DRAG = 3000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 1500;
         this.JUMP_VELOCITY = -750;
-        this.toggle = false;
-        this.ballx = 200;
-        this.bally = 600;
-        this.direction = 1;
         
-        this.stroke = 0;
-        this.gameover = false;
-        this.slow = 0.5;
     }
     preload(){
         this.load.setPath("./assets/");
@@ -59,7 +60,7 @@ class Platformer extends Phaser.Scene {
 
         this.holeLayer = this.map.getObjectLayer('hole')['objects'];
 
-        console.log(this.coinLayer);
+        //console.log(this.coinLayer);
         this.coins = this.physics.add.staticGroup()
         this.coinLayer.forEach(object => {
             let obj = this.coins.create(object.x * 2 * 1.8/2, object.y* 2 *1.8/2-20, "coin"); 
@@ -68,7 +69,7 @@ class Platformer extends Phaser.Scene {
                obj.body.width = object.width; 
                obj.body.height = object.height; 
         });
-        console.log(this.holeLayer);
+        //console.log(this.holeLayer);
         
         
         this.holes = this.physics.add.staticGroup();
@@ -146,27 +147,12 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
-        console.log(this.ball)
-        if(my.sprite.player.body.y >= 750){
-            this.slow = 0.5;
-            my.sprite.player.body.setMaxVelocityX(this.MAXVELX * this.slow);
-
-        }else{
-            this.slow = 1;
-            my.sprite.player.body.setMaxVelocityX(this.MAXVELX);
-
-        }
-
-        if(this.ball.body.y >= 650 && this.ball.body.x >= 2400 && this.ball.body.x < 2520){
-            this.gameover = true;
-        }
-        if(this.gameover){
-            let finalscore = 15 - this.stroke + this.ball.score;
-            console.log(finalscore);
-            this.gameovertext.setText("You Win, Score: " + finalscore);
-            this.gameovertext.visible = true;
-            console.log("WIN");
-        }
+        //console.log(this.ball.score);
+        //console.log(this.stroke);
+        //console.log(this.ball)
+        this.waterslow();
+        this.gameovercon();
+        
         //this.ball.body.velocity.x == 0 && this.ball.body.velocity.y == 0
         if(this.ball.body.velocity.x == 0 && Math.abs(this.ball.body.velocity.y + 8.333333) >= 0.001 && this.ball.body.blocked.down && this.ball.body.y < 850){
             this.ballx = this.ball.body.x ;
@@ -264,7 +250,7 @@ class Platformer extends Phaser.Scene {
     //console.log(this.ball.body.x);
     //console.log(this.ball.body.y);
         //console.log(this.direction);
-console.log(this.ball.score);
+//console.log(this.ball.score);
         // player jump
         // note that we need body.blocked rather than body.touching b/c the former applies to tilemap tiles and the latter to the "ground"
         if(!my.sprite.player.body.blocked.down ) {
@@ -275,7 +261,39 @@ console.log(this.ball.score);
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
 
         }
+        this.capverticalveloc();
         
+    }
+    gameovercon(){
+        if(this.ball.body.y >= 650 && this.ball.body.x >= 2400 && this.ball.body.x < 2520){
+            this.gameover = true;
+        }
+        if(this.gameover){
+            let finalscore = 15 - this.stroke + this.ball.score;
+            //console.log(finalscore);
+            this.gameovertext.setText("You Win, Score: " + finalscore);
+            this.gameovertext.visible = true;
+            //console.log("WIN");
+        }
+    }
+    waterslow(){
+        if(my.sprite.player.body.y >= 750){
+            this.slow = 0.5;
+            my.sprite.player.body.setMaxVelocityX(this.MAXVELX * this.slow);
+
+        }else{
+            this.slow = 1;
+            my.sprite.player.body.setMaxVelocityX(this.MAXVELX);
+
+        }
+    }
+    capverticalveloc(){
+        if(my.sprite.player.body.velocity.y >= 800){
+            my.sprite.player.body.velocity.y = 800;
+        }
+        if(this.ball.body.velocity.y >= 800){
+            this.ball.body.velocity.y= 800;
+        }
     }
     collectCoin(ball, coin) {
         ball.score+=2;
