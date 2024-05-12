@@ -17,6 +17,7 @@ class Platformer extends Phaser.Scene {
         this.score = 0;
         this.stroke = 0;
         this.gameover = false;
+        this.slow = 0.5;
     }
     preload(){
         this.load.setPath("./assets/");
@@ -145,6 +146,16 @@ class Platformer extends Phaser.Scene {
     }
 
     update() {
+        if(my.sprite.player.body.y >= 750){
+            this.slow = 0.5;
+            my.sprite.player.body.setMaxVelocityX(this.MAXVELX * this.slow);
+
+        }else{
+            this.slow = 1;
+            my.sprite.player.body.setMaxVelocityX(this.MAXVELX);
+
+        }
+
         if(this.ball.body.y >= 650 && this.ball.body.x >= 2400 && this.ball.body.x < 2520){
             this.gameover = true;
         }
@@ -227,14 +238,14 @@ class Platformer extends Phaser.Scene {
         
         if(cursors.left.isDown &&!cursors.space.isDown ) {
             // TODO: have the player accelerate to the left
-            my.sprite.player.body.setAccelerationX(-this.ACCELERATION);
+            my.sprite.player.body.setAccelerationX(-this.ACCELERATION * this.slow);
             my.sprite.player.resetFlip();
             my.sprite.player.anims.play('walk', true);
             this.direction = -1;
 
         } else if(cursors.right.isDown && !cursors.space.isDown) {
             // TODO: have the player accelerate to the right
-            my.sprite.player.body.setAccelerationX(this.ACCELERATION);
+            my.sprite.player.body.setAccelerationX(this.ACCELERATION * this.slow);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
             this.direction = 1;
