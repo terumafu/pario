@@ -219,8 +219,9 @@ class Platformer extends Phaser.Scene {
         
         
         if(Phaser.Input.Keyboard.JustUp(cursors.space) && my.sprite.player.x >= this.ball.x-40 && my.sprite.player.x <= this.ball.x + 40 && my.sprite.player.y >= this.ball.y - 20 && my.sprite.player.y <= this.ball.y + 20){
-            this.ball.setVelocityX(Math.sqrt(this.golfclub.head.rotation,2) * 400 * this.direction);
-            this.ball.setVelocityY(-Math.sqrt(this.golfclub.head.rotation,2) * 400);
+            this.ball.setVelocityX(Math.sqrt(this.golfclub.head.rotation,2) * 500 * this.direction);
+            this.ball.setVelocityY(-Math.sqrt(this.golfclub.head.rotation,2) * 500);
+            this.stroke++;
             
         }
         
@@ -262,7 +263,7 @@ class Platformer extends Phaser.Scene {
     }
     collectCoin(ball, coin) {
         coin.destroy(coin.x, coin.y); // remove the tile/coin
-        this.score++;
+        this.score+= 2;
         return;
     }
     wingame(ball, hole){
