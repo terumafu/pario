@@ -224,12 +224,12 @@ class Platformer extends Phaser.Scene {
             this.bally = this.ball.body.y -20;
             
         }
-        
+        /*
         if(cursors.down.isDown){
             this.ball.body.x = my.sprite.player.x;
             this.ball.body.y = my.sprite.player.y;
         }
-
+*/
         //current version has cheats active but it doesnt apply for some reason
 
 
