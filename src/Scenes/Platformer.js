@@ -271,7 +271,14 @@ class Platformer extends Phaser.Scene {
         if(this.gameover){
             let finalscore = 15 - this.stroke + this.ball.score;
             //console.log(finalscore);
-            this.gameovertext.setText("You Win, Score: " + finalscore);
+            let text = "";
+            if(finalscore > 0){
+                text = " Below";
+            }
+            else{
+                text = " Above";
+            }
+            this.gameovertext.setText("You Win, " + Math.abs(finalscore) + text + " Par!");
             this.gameovertext.visible = true;
             //console.log("WIN");
         }
