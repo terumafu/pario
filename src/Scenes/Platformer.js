@@ -9,6 +9,7 @@ class Platformer extends Phaser.Scene {
         this.stroke = 0;
         this.gameover = false;
         this.slow = 0.5;
+        this.sound;
     }
     
     init() {
@@ -18,7 +19,7 @@ class Platformer extends Phaser.Scene {
         this.DRAG = 3000;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 1500;
         this.JUMP_VELOCITY = -750;
-        
+        this.PARTICLE_VELOCITY = 50;
     }
     preload(){
         this.load.setPath("./assets/");
@@ -29,9 +30,13 @@ class Platformer extends Phaser.Scene {
         this.load.image("golfclubhandle", "tile_0058.png");
         this.load.atlasXML("balls", "rollingBall_sheet.png", "rollingBall_sheet.xml");
         this.load.image("coin", "tile_0151.png");
+        this.load.image("bird", "tile_0025.png");
+        this.load.image("animal", "tile_0021.png");
+
+        this.load.audio('ding', ["impactMining_001.ogg" ]);
     }
     create() {
-        
+        this.sound = this.sound.add('ding', {loop: false});
         this.bg = this.add.image(0, 0, "background").setOrigin(0, 0);
         this.bg.setScale(SCALE);
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
@@ -59,6 +64,28 @@ class Platformer extends Phaser.Scene {
         this.coinLayer = this.map.getObjectLayer('Coin Layer')['objects'];
 
         this.holeLayer = this.map.getObjectLayer('hole')['objects'];
+
+        this.animalLayer = this.map.getObjectLayer('animals')['objects'];
+
+        this.birdLayer = this.map.getObjectLayer('birds')['objects'];
+
+        this.animals = this.physics.add.staticGroup()
+        this.animalLayer.forEach(object => {
+            let obj = this.animals.create(object.x * 2 * 1.8/2, object.y* 2 *1.8/2-20, "animal"); 
+               obj.setScale(SCALE); 
+               //obj.setOrigin(0); 
+               obj.body.width = object.width; 
+               obj.body.height = object.height; 
+        });
+
+        this.birds = this.physics.add.staticGroup()
+        this.birdLayer.forEach(object => {
+            let obj = this.birds.create(object.x * 2 * 1.8/2, object.y* 2 *1.8/2-20, "bird"); 
+               obj.setScale(SCALE); 
+               //obj.setOrigin(0); 
+               obj.body.width = object.width; 
+               obj.body.height = object.height; 
+        });
 
         //console.log(this.coinLayer);
         this.coins = this.physics.add.staticGroup()
@@ -136,14 +163,46 @@ class Platformer extends Phaser.Scene {
         
         this.ball = this.physics.add.sprite(200, 700 , "balls", "ball_blue_small.png").setScale(0.8);
         this.ball.score = 0;
+        this.ball.sound = false;
         this.physics.add.collider(this.ball, this.groundLayer);
         this.physics.add.collider(my.sprite.player, this.groundLayer);
         this.physics.add.overlap(this.ball, this.coins, this.collectCoin);
 
+        this.physics.add.overlap(this.ball, this.animals, this.collanimal);
+
+        this.physics.add.overlap(this.ball, this.birds, this.collanimal);
+
         this.physics.add.overlap(this.ball, this.holes, this.wingame);
-        this.gameovertext = this.add.text(2200, 500, "YES", { font: '40px "Press Start 2P"' });
+        this.gameovertext = this.add.text(2100, 500, "YES", { font: '40px "Press Start 2P"' });
         this.gameovertext.visible = false;
         this.startingtext = this.add.text(200, 750, "Welcome to Pario, arrow keys to move, space to charge up your swing",{ font: '40px "Press Start 2P"' } );
+        
+        my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['smoke_03.png', 'smoke_09.png'],
+            // TODO: Try: add random: true
+            scale: {start: 0.03, end: 0.1},
+            // TODO: Try: maxAliveParticles: 8,
+            maxAliveParticles: 8,
+            lifespan: 350,
+            // TODO: Try: gravityY: -400,
+            
+            alpha: {start: 1, end: 0.1}, 
+        });
+
+        my.vfx.walking.stop();
+
+        my.vfx.jumping = this.add.particles(0, 0, "kenny-particles", {
+            frame: ['smoke_03.png', 'smoke_09.png'],
+            // TODO: Try: add random: true
+            scale: {start: 0.03, end: 0.2},
+            // TODO: Try: maxAliveParticles: 8,
+            lifespan: 350,
+            // TODO: Try: gravityY: -400,
+            gravityY: -400,
+            alpha: {start: 1, end: 0.1}, 
+        });
+
+        my.vfx.jumping.stop();
     }
 
     update() {
@@ -153,17 +212,23 @@ class Platformer extends Phaser.Scene {
         this.waterslow();
         this.gameovercon();
         
+        if(this.ball.sound == true){
+            this.sound.play();
+            this.ball.sound = false;
+        }
+
+
         //this.ball.body.velocity.x == 0 && this.ball.body.velocity.y == 0
         if(this.ball.body.velocity.x == 0 && Math.abs(this.ball.body.velocity.y + 8.333333) >= 0.001 && this.ball.body.blocked.down && this.ball.body.y < 850){
             this.ballx = this.ball.body.x ;
             this.bally = this.ball.body.y -20;
             
         }
-        /*
+        
         if(cursors.down.isDown){
             this.ball.body.x = my.sprite.player.x;
             this.ball.body.y = my.sprite.player.y;
-        }*/
+        }
 
         //current version has cheats active but it doesnt apply for some reason
 
@@ -234,6 +299,20 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.anims.play('walk', true);
             this.direction = -1;
 
+            my.vfx.walking.startFollow(my.sprite.player, my.sprite.player.displayWidth/2-10, my.sprite.player.displayHeight/2-5, false);
+
+            my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
+
+            // Only play smoke effect if touching the ground
+
+            if (my.sprite.player.body.blocked.down) {
+
+                my.vfx.walking.start();
+
+            }else{
+                my.vfx.walking.stop();
+            }
+
         } else if(cursors.right.isDown && !cursors.space.isDown) {
             // TODO: have the player accelerate to the right
             my.sprite.player.body.setAccelerationX(this.ACCELERATION * this.slow);
@@ -241,11 +320,27 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.anims.play('walk', true);
             this.direction = 1;
 
+            my.vfx.walking.startFollow(my.sprite.player, my.sprite.player.displayWidth/2-10, my.sprite.player.displayHeight/2-5, false);
+
+            my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
+
+            // Only play smoke effect if touching the ground
+
+            if (my.sprite.player.body.blocked.down) {
+
+                my.vfx.walking.start();
+
+            }else{
+                my.vfx.walking.stop();
+            }
+
         } else {
             // TODO: set acceleration to 0 and have DRAG take over
             my.sprite.player.body.setAccelerationX(0);
             my.sprite.player.body.setDragX(this.DRAG);
             my.sprite.player.anims.play('idle');
+
+            my.vfx.walking.stop();
         }
     //console.log(this.ball.body.x);
     //console.log(this.ball.body.y);
@@ -260,10 +355,18 @@ class Platformer extends Phaser.Scene {
             // TODO: set a Y velocity to have the player "jump" upwards (negative Y direction)
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
 
+            my.vfx.jumping.startFollow(my.sprite.player, my.sprite.player.displayWidth/2-10, my.sprite.player.displayHeight/2-5, false);
+
+            my.vfx.jumping.setParticleSpeed(0, -10);
+            my.vfx.jumping.start();
+
+        }else{
+            my.vfx.jumping.stop();
         }
         this.capverticalveloc();
         
     }
+    
     gameovercon(){
         if(this.ball.body.y >= 650 && this.ball.body.x >= 2400 && this.ball.body.x < 2520){
             this.gameover = true;
@@ -304,12 +407,18 @@ class Platformer extends Phaser.Scene {
     }
     collectCoin(ball, coin) {
         ball.score+=2;
-        
+        ball.sound = true;
         coin.destroy(coin.x, coin.y); // remove the tile/coin
         return;
     }
+    
     wingame(ball, hole){
         this.gameover = true;
+        return;
+    }
+    collanimal(ball, animal){
+        ball.score -= 1;
+        animal.destroy(animal.x, animal.y);
         return;
     }
 }
