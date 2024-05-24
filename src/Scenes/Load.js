@@ -12,6 +12,11 @@ class Load extends Phaser.Scene {
         // Load tilemap information
         this.load.image("tilemap_tiles", "tilemap_packed.png");                         // Packed tilemap
         this.load.tilemapTiledJSON("platformer-level-1", "platformer-level-1.tmj");   // Tilemap in JSON
+        this.load.spritesheet("tilemap_sheet", "tilemap_packed.png", {
+            frameWidth: 18,
+            frameHeight: 18
+        });
+        this.load.multiatlas("kenny-particles", "kenny-particles.json");
     }
 
     create() {
