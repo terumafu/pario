@@ -10,7 +10,19 @@
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "/Users/jerry/CMPM120/PlatformImprovement/assets/platformer-level-1.tmj": {
+            "scale": 0.9181134259259259,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 443.84494169555626,
+                "y": 242.34478411597857
+            }
+        },
+        "/Users/jerry/CMPM120/PlatformImprovement/assets/platformer-level-1.tmj#kenny_tilemap_packed": {
+            "scaleInDock": 1
         },
         "/Users/jerry/CMPM120/TopDownWorld/assets/TinyTownMap.json": {
             "scale": 2.2265625,
@@ -27,12 +39,15 @@
             "scaleInDock": 1
         },
         "platformer-level-1.tmj": {
-            "scale": 0.6764,
-            "selectedLayer": 0,
+            "scale": 1.0522,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 512.2708456534596,
-                "y": 287.551744529864
+                "x": 372.0775517962365,
+                "y": 328.3596274472534
             }
+        },
+        "platformer-level-1.tmj#characters": {
+            "scaleInDock": 1
         },
         "platformer-level-1.tmj#kenny_tilemap_packed": {
             "scaleInDock": 1,
@@ -40,7 +55,9 @@
         }
     },
     "frame.defaultDuration": 400,
-    "last.imagePath": "/Users/jerry/CMPM120/TopDownWorld/assets",
+    "last.exportedFilePath": "/Users/jerry/CMPM120/PlatformImprovement/assets",
+    "last.imagePath": "/Users/jerry/CMPM120/StarterPlatformer/assets",
+    "map.lastUsedExportFilter": "All Files (*)",
     "map.lastUsedFormat": "json",
     "map.tileHeight": 18,
     "map.tileWidth": 18,
@@ -52,11 +69,13 @@
     "property.type": "bool",
     "recentFiles": [
         "platformer-level-1.tmj",
+        "/Users/jerry/CMPM120/PlatformImprovement/assets/platformer-level-1.tmj",
         "/Users/jerry/CMPM120/TopDownWorld/assets/TinyTownMap.json"
     ],
     "tileset.embedInMap": true,
+    "tileset.spacing": 0,
     "tileset.tileSize": {
-        "height": 16,
-        "width": 16
+        "height": 24,
+        "width": 24
     }
 }
